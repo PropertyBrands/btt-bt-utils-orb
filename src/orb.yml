@@ -1,0 +1,21 @@
+version: 2.1
+description: >
+  Provide common reusable tools for Bluetent CI jobs.
+display:
+  home_url: https://www.bluetent.com
+  source_url: https://github.com/bluetent/bt-utils-orb
+commands:
+  parse-commit-message:
+    description: |
+      Parse and set environmental variables provided by btenv messages
+    steps:
+      # Checkout the repo in which we are integrating. This is not checking out the orb repo
+      - checkout
+      # Since we have a completely built up git repo, we can parse the commit message by
+      # logging it and performing a regex match
+      - run:
+          name: Parse Commit Message
+          command: |
+            MESSAGE=`git log --format=oneline -n 1 $CIRCLE_SHA1`
+            echo -e "#!/bin/bash\n" >> ./btenv.sh
+            echo $MESSAGE | grep -oP "(?<=\[btenv\ ).*?(?=\])" >> ./btenv.sh
